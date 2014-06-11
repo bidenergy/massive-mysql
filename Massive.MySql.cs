@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace Massive
 {
@@ -135,17 +136,18 @@ namespace Massive
         /// <summary>
         /// Create a dynamic model
         /// </summary>
-        /// <param name="connectionStringName">the connection string name or the connection stirng itself</param>
+        /// <param name="connectionString">the connection string name or the connection stirng itself</param>
         /// <param name="tableName">the table name</param>
         /// <param name="primaryKeyField">the primary key field name</param>
-        public DynamicModel(string connectionStringName, string tableName = "", string primaryKeyField = "")
+        public DynamicModel(string connectionString, string tableName = "", string primaryKeyField = "")
         {
             TableName = string.IsNullOrEmpty(tableName) ? GetType().Name : tableName;
             PrimaryKeyField = string.IsNullOrEmpty(primaryKeyField) ? "ID" : primaryKeyField;
 
             try
             {
-                _factory = DbProviderFactories.GetFactory(ProviderName);
+                _factory = new MySqlClientFactory();
+                //_factory = DbProviderFactories.GetFactory(ProviderName);
             }
             catch (FileLoadException ex)
             {
@@ -162,8 +164,7 @@ namespace Massive
 
             }
 
-            var conString = ConfigurationManager.ConnectionStrings[connectionStringName];
-            _connectionString = conString != null ? conString.ConnectionString : connectionStringName;
+            _connectionString = connectionString;
         }
 
         /// <summary>
